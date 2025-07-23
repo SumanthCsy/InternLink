@@ -3,16 +3,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Briefcase, MapPin, Building, Clock, Eye } from "lucide-react";
 import type { Timestamp } from "firebase/firestore";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-
-export type Internship = {
-  id: string;
-  title: string;
-  company: string;
-  location: string;
-  description: string;
-  postedAt?: Timestamp;
-};
+import type { InternshipWithId } from "@/types/internship";
 
 // Helper function to format the date
 function formatDate(timestamp?: Timestamp) {
@@ -25,9 +16,8 @@ function formatDate(timestamp?: Timestamp) {
   });
 }
 
-export function InternshipCard({ internship }: { internship: Internship }) {
+export function InternshipCard({ internship }: { internship: InternshipWithId }) {
   return (
-    <Dialog>
       <Card className="flex flex-col h-full hover:shadow-lg hover:border-primary/50 transition-all duration-200">
         <CardHeader>
           <div className="flex items-start justify-between">
@@ -51,34 +41,16 @@ export function InternshipCard({ internship }: { internship: Internship }) {
           </p>
         </CardContent>
         <CardFooter className="flex gap-2">
-           <DialogTrigger asChild>
-             <Button variant="outline" className="w-full">
-                <Eye className="mr-2 h-4 w-4" />
-                View
+           <Button variant="outline" className="w-full" asChild>
+                <Link href={`/internships/${internship.id}`}>
+                    <Eye className="mr-2 h-4 w-4" />
+                    View
+                </Link>
              </Button>
-            </DialogTrigger>
           <Button asChild className="w-full">
             <Link href={`/apply?internshipId=${internship.id}&title=${internship.title}`}>Apply Now</Link>
           </Button>
         </CardFooter>
       </Card>
-      <DialogContent className="sm:max-w-[625px]">
-        <DialogHeader>
-          <DialogTitle className="font-headline text-2xl">{internship.title}</DialogTitle>
-          <DialogDescription>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
-                <span className="flex items-center gap-2"><Building className="w-4 h-4" /> {internship.company}</span>
-                <span className="flex items-center gap-2"><MapPin className="w-4 h-4" /> {internship.location}</span>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4 text-sm text-muted-foreground max-h-[400px] overflow-y-auto pr-4">
-            <p className="whitespace-pre-wrap">{internship.description}</p>
-        </div>
-         <Button asChild size="lg">
-            <Link href={`/apply?internshipId=${internship.id}&title=${internship.title}`}>Apply Now</Link>
-        </Button>
-      </DialogContent>
-    </Dialog>
   );
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { InternshipCard, type Internship } from "@/components/internship-card";
+import { InternshipCard } from "@/components/internship-card";
+import type { InternshipWithId } from "@/types/internship";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function InternshipsPage() {
-  const [internships, setInternships] = useState<Internship[]>([]);
+  const [internships, setInternships] = useState<InternshipWithId[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,7 +20,7 @@ export default function InternshipsPage() {
         const internshipsData = querySnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data(),
-        })) as Internship[];
+        })) as InternshipWithId[];
         setInternships(internshipsData);
       } catch (error) {
         console.error("Error fetching internships:", error);
