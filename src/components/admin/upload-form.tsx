@@ -54,7 +54,7 @@ export function UploadForm() {
       toast({
         variant: "destructive",
         title: "Upload Failed",
-        description: "There was a problem posting the internship.",
+        description: "There was a problem posting the internship. Please try again.",
       });
     }
   }
