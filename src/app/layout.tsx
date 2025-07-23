@@ -23,7 +23,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="font-body antialiased min-h-screen bg-background flex flex-col">
+      <body className="font-body antialiased min-h-screen bg-background flex flex-col animated-gradient">
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
