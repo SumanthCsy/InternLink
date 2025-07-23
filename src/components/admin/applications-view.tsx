@@ -198,15 +198,11 @@ export function ApplicationsView() {
                         margin-bottom: 2rem;
                     }
                     .stamp-area {
-                        border: 2px dashed #ccc;
                         width: 150px;
                         height: 150px;
                         display: flex;
                         align-items: center;
                         justify-content: center;
-                        text-align: center;
-                        color: #999;
-                        font-size: 0.9rem;
                     }
                 </style>
             </head>
@@ -251,7 +247,7 @@ export function ApplicationsView() {
                             <p><strong>InternLink Team</strong></p>
                         </div>
                         <div class="stamp-area">
-                            Place Official Stamp Here
+                            <img src="/stamp.png" alt="Official Stamp" style="width: 120px; height: 120px; object-fit: contain;">
                         </div>
                     </div>
                 </div>
