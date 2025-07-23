@@ -1,0 +1,52 @@
+// This file contains the Genkit flow for answering student questions about internships, applications, and community guidelines.
+
+'use server';
+
+/**
+ * @fileOverview An AI chatbot that answers student questions about internships, applications, and community guidelines.
+ *
+ * - answerQuestions - A function that answers questions from students.
+ * - AnswerQuestionsInput - The input type for the answerQuestions function.
+ * - AnswerQuestionsOutput - The return type for the answerQuestions function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+
+const AnswerQuestionsInputSchema = z.object({
+  question: z.string().describe('The question from the student.'),
+});
+export type AnswerQuestionsInput = z.infer<typeof AnswerQuestionsInputSchema>;
+
+const AnswerQuestionsOutputSchema = z.object({
+  answer: z.string().describe('The answer to the student question.'),
+});
+export type AnswerQuestionsOutput = z.infer<typeof AnswerQuestionsOutputSchema>;
+
+export async function answerQuestions(input: AnswerQuestionsInput): Promise<AnswerQuestionsOutput> {
+  return answerQuestionsFlow(input);
+}
+
+const prompt = ai.definePrompt({
+  name: 'answerQuestionsPrompt',
+  input: {schema: AnswerQuestionsInputSchema},
+  output: {schema: AnswerQuestionsOutputSchema},
+  prompt: `You are a chatbot assistant for InternLink, an internship website.
+
+  Answer the following question about internships, applications, and community guidelines:
+
+  Question: {{{question}}}
+  `,
+});
+
+const answerQuestionsFlow = ai.defineFlow(
+  {
+    name: 'answerQuestionsFlow',
+    inputSchema: AnswerQuestionsInputSchema,
+    outputSchema: AnswerQuestionsOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);
