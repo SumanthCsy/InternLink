@@ -108,6 +108,10 @@ export function ApplicationsView() {
                  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
                  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
                 <style>
+                    @page {
+                        size: auto;
+                        margin: 0mm;
+                    }
                     body {
                         font-family: 'Inter', sans-serif;
                         color: #000;
