@@ -11,9 +11,6 @@ export function Footer() {
             © {year} InternLink. All rights reserved.
           </p>
         </div>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <Link href="/adminpanel" className="hover:text-foreground">Admin</Link>
-        </div>
       </div>
     </footer>
   );
