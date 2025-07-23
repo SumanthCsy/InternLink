@@ -69,7 +69,7 @@ export default function CommunityPage() {
              </Link>
           </div>
           <Image
-            src="src/community.jpeg"
+            src="https://placehold.co/550x310.png"
             width={550}
             height={310}
             alt="Community collaboration"
