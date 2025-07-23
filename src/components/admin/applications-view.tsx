@@ -71,7 +71,7 @@ export function ApplicationsView() {
 
   useEffect(() => {
     fetchApplications();
-  }, []);
+  }, [toast]);
 
   const handleDeleteClick = (app: Application) => {
     setSelectedApp(app);
@@ -94,23 +94,174 @@ export function ApplicationsView() {
 
   const handlePrint = (app: Application) => {
     const printWindow = window.open('', '_blank');
-    printWindow?.document.write(`
+    if (!printWindow) {
+        toast({ variant: "destructive", title: "Error", description: "Could not open print window. Please disable your pop-up blocker." });
+        return;
+    }
+    printWindow.document.write(`
         <html>
-            <head><title>Application: ${app.fullName}</title></head>
+            <head>
+                <title>Application: ${app.fullName}</title>
+                 <link rel="preconnect" href="https://fonts.googleapis.com" />
+                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+                 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+                 <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+                <style>
+                    body {
+                        font-family: 'Inter', sans-serif;
+                        color: #000;
+                        margin: 0;
+                        padding: 2rem;
+                        background-color: #fff;
+                    }
+                    .container {
+                        max-width: 800px;
+                        margin: auto;
+                    }
+                    .header {
+                        display: flex;
+                        align-items: center;
+                        gap: 16px;
+                        border-bottom: 4px solid hsl(27, 91%, 55%);
+                        padding-bottom: 1rem;
+                    }
+                    .header svg {
+                        width: 48px;
+                        height: 48px;
+                        color: hsl(27, 91%, 55%);
+                    }
+                    .header h1 {
+                        font-family: 'Space Grotesk', sans-serif;
+                        font-size: 2rem;
+                        font-weight: 700;
+                        margin: 0;
+                        color: hsl(27, 91%, 55%);
+                    }
+                    .title-section {
+                        text-align: center;
+                        margin: 2rem 0;
+                    }
+                    .title-section h2 {
+                        font-family: 'Space Grotesk', sans-serif;
+                        font-size: 1.8rem;
+                        font-weight: 700;
+                        margin: 0;
+                        text-decoration: underline;
+                    }
+                    .meta-info {
+                        display: flex;
+                        justify-content: space-between;
+                        margin-bottom: 2rem;
+                        font-family: 'Space Grotesk', sans-serif;
+                    }
+                    .details-grid {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 1rem;
+                        margin-bottom: 2rem;
+                    }
+                    .detail-item {
+                        margin-bottom: 1rem;
+                    }
+                    .detail-item strong {
+                        display: block;
+                        font-weight: 700;
+                        margin-bottom: 0.25rem;
+                        color: hsl(224, 71%, 10%);
+                    }
+                     .detail-item p {
+                        margin: 0;
+                    }
+                    .interests-list {
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                        padding: 0;
+                        margin: 0;
+                    }
+                    .interest-item {
+                        list-style: none;
+                        background-color: hsl(224, 71%, 90%);
+                        padding: 4px 8px;
+                        border-radius: 4px;
+                    }
+                    .footer {
+                        margin-top: 4rem;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-end;
+                    }
+                    .signature p {
+                        margin: 0;
+                    }
+                     .signature p:first-child {
+                        margin-bottom: 2rem;
+                    }
+                    .stamp-area {
+                        border: 2px dashed #ccc;
+                        width: 150px;
+                        height: 150px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        text-align: center;
+                        color: #999;
+                        font-size: 0.9rem;
+                    }
+                </style>
+            </head>
             <body>
-                <h1>Application Details</h1>
-                <p><strong>Name:</strong> ${app.fullName}</p>
-                <p><strong>Email:</strong> ${app.email}</p>
-                <p><strong>Mobile:</strong> ${app.mobile}</p>
-                <p><strong>College:</strong> ${app.college}</p>
-                <p><strong>Branch:</strong> ${app.branch}</p>
-                <p><strong>Interests:</strong> ${app.interests.join(', ')}</p>
-                <p><strong>Applied On:</strong> ${new Date(app.appliedAt?.seconds * 1000).toLocaleString()}</p>
+                <div class="container">
+                    <div class="header">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+                        <h1>InternLink</h1>
+                    </div>
+
+                    <div class="meta-info">
+                        <p><strong>Ref:</strong> ${app.id}</p>
+                        <p><strong>Date:</strong> ${new Date().toLocaleDateString("en-GB")}</p>
+                    </div>
+
+                    <div class="title-section">
+                        <h2>Application Form</h2>
+                    </div>
+
+                    <p style="margin-bottom: 2rem;">This document contains the details of the application submitted by ${app.fullName}.</p>
+                    
+                    <h3>Applicant Details:</h3>
+                    <div class="details-grid">
+                        <div class="detail-item"><strong>Full Name:</strong> <p>${app.fullName}</p></div>
+                        <div class="detail-item"><strong>Email Address:</strong> <p>${app.email}</p></div>
+                        <div class="detail-item"><strong>Mobile Number:</strong> <p>${app.mobile}</p></div>
+                        <div class="detail-item"><strong>College:</strong> <p>${app.college}</p></div>
+                        <div class="detail-item"><strong>Branch/Department:</strong> <p>${app.branch}</p></div>
+                        <div class="detail-item"><strong>Applied On:</strong> <p>${app.appliedAt ? new Date(app.appliedAt.seconds * 1000).toLocaleString() : 'N/A'}</p></div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <strong>Interests:</strong>
+                        <ul class="interests-list">
+                            ${app.interests.map(interest => `<li class="interest-item">${interest}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="footer">
+                        <div class="signature">
+                            <p>Sincerely,</p>
+                            <p><strong>InternLink Team</strong></p>
+                        </div>
+                        <div class="stamp-area">
+                            Place Official Stamp Here
+                        </div>
+                    </div>
+                </div>
             </body>
         </html>
     `);
-    printWindow?.document.close();
-    printWindow?.print();
+    printWindow.document.close();
+    setTimeout(() => {
+        printWindow.print();
+    }, 500);
   };
 
   return (
