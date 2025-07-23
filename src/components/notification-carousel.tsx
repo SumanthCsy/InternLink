@@ -1,54 +1,46 @@
 "use client"
 
-import * as React from "react"
-import Autoplay from "embla-carousel-autoplay"
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel"
 import type { NotificationWithId } from "@/types/notification"
 import { Megaphone } from "lucide-react"
 import Link from "next/link"
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 
 type NotificationCarouselProps = {
     notifications: NotificationWithId[]
 }
 
 export function NotificationCarousel({ notifications }: NotificationCarouselProps) {
-  const plugin = React.useRef(
-    Autoplay({ delay: 4000, stopOnInteraction: true })
-  )
+    // We need to duplicate the notifications to create a seamless loop
+    const duplicatedNotifications = [...notifications, ...notifications];
 
   return (
-    <Carousel
-      plugins={[plugin.current]}
-      className="w-full"
-      onMouseEnter={plugin.current.stop}
-      onMouseLeave={plugin.current.reset}
-      opts={{
-        loop: true,
-        align: "start",
-      }}
-    >
-      <CarouselContent>
-        {notifications.map((notification) => (
-          <CarouselItem key={notification.id}>
-            <div className="p-1">
-              <div className="flex items-center justify-center gap-2 text-sm">
-                <Megaphone className="h-4 w-4 text-primary"/>
-                {notification.link ? (
-                    <Link href={notification.link} className="font-medium hover:underline">
-                        {notification.title}
-                    </Link>
-                ) : (
-                    <span className="font-medium">{notification.title}</span>
-                )}
-              </div>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
+    <Card className="w-full max-w-lg mx-auto overflow-hidden">
+        <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2">
+                <Megaphone className="h-5 w-5 text-primary"/>
+                What's New?
+            </CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+           <div className="h-48 overflow-hidden relative">
+             <div className="absolute top-0 animate-scroll-up">
+                {duplicatedNotifications.map((notification, index) => (
+                     <div key={`${notification.id}-${index}`} className="p-4 border-b">
+                         {notification.link ? (
+                            <Link href={notification.link} className="font-medium hover:underline">
+                                {notification.title}
+                            </Link>
+                        ) : (
+                            <p className="font-medium">{notification.title}</p>
+                        )}
+                        <p className="text-xs text-muted-foreground pt-1">
+                            {new Date(notification.createdAt.seconds * 1000).toLocaleDateString()}
+                        </p>
+                    </div>
+                ))}
+             </div>
+           </div>
+        </CardContent>
+    </Card>
   )
 }

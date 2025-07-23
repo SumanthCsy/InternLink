@@ -48,17 +48,11 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
-        {notifications.length > 0 && (
-           <section className="w-full py-4 border-b">
-             <div className="container px-4 md:px-6">
-               <NotificationCarousel notifications={notifications} />
-             </div>
-           </section>
-        )}
+        
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-              <div className="flex flex-col justify-center space-y-4">
+            <div className="grid gap-12 lg:grid-cols-2 lg:gap-12">
+               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none font-headline animated-text">
                     Find Your Next Tech Internship
@@ -76,14 +70,12 @@ export default async function Home() {
                   </Button>
                 </div>
               </div>
-              <Image
-                src="https://placehold.co/600x400.png"
-                alt="Hero"
-                width={600}
-                height={400}
-                data-ai-hint="team collaboration"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-              />
+
+              {notifications.length > 0 && (
+                <div className="flex items-center justify-center">
+                  <NotificationCarousel notifications={notifications} />
+                </div>
+              )}
             </div>
           </div>
         </section>
