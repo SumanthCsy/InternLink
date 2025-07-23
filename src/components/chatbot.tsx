@@ -26,7 +26,24 @@ export function Chatbot() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showHelpPopup, setShowHelpPopup] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const helpPopupTimerRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    // Show popup on initial load
+    helpPopupTimerRef.current = setTimeout(() => setShowHelpPopup(true), 2000); // Show after 2s
+    
+    // Hide after 20 seconds total
+    const hideTimer = setTimeout(() => {
+        setShowHelpPopup(false);
+    }, 22000); // 2s delay + 20s visible
+
+    return () => {
+        clearTimeout(helpPopupTimerRef.current);
+        clearTimeout(hideTimer);
+    };
+  }, []);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -36,6 +53,22 @@ export function Chatbot() {
       });
     }
   }, [messages]);
+
+  const handleToggleChat = () => {
+    setIsOpen(!isOpen);
+    // When opening chat, show the help popup for a few seconds
+    if (!isOpen) {
+      setShowHelpPopup(true);
+      clearTimeout(helpPopupTimerRef.current); // Clear any existing timers
+      helpPopupTimerRef.current = setTimeout(() => {
+        setShowHelpPopup(false);
+      }, 5000); // Hide after 5 seconds
+    } else {
+        // if closing, hide it immediately
+        setShowHelpPopup(false);
+        clearTimeout(helpPopupTimerRef.current);
+    }
+  };
 
 
   const handleSend = async () => {
@@ -71,7 +104,12 @@ export function Chatbot() {
   return (
     <>
       <div className="fixed bottom-4 right-4 z-50">
-        <Button size="icon" className="rounded-full w-14 h-14 shadow-lg" onClick={() => setIsOpen(!isOpen)}>
+        <div className={cn("absolute bottom-full right-0 mb-2 transition-all duration-300", showHelpPopup ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none")}>
+            <div className="bg-primary text-primary-foreground text-sm rounded-lg px-3 py-1 shadow-lg whitespace-nowrap">
+                How can I help you?
+            </div>
+        </div>
+        <Button size="icon" className="rounded-full w-14 h-14 shadow-lg animate-bounce" onClick={handleToggleChat}>
           {isOpen ? <X className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
           <span className="sr-only">Toggle Chatbot</span>
         </Button>
