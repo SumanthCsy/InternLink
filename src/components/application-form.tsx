@@ -18,6 +18,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { InternshipWithId } from "@/types/internship";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const interests = [
   { id: "developing", label: "Developing Projects" },
@@ -33,12 +35,18 @@ const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
   college: z.string().min(3, { message: "College name is required." }),
   branch: z.string().min(2, { message: "Branch/Department is required." }),
+  internshipId: z.string().min(1, { message: "Please select an internship." }),
   interests: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one interest.",
   }),
 });
 
-export function ApplicationForm() {
+type ApplicationFormProps = {
+    internships: InternshipWithId[];
+    selectedInternshipId?: string;
+}
+
+export function ApplicationForm({ internships, selectedInternshipId }: ApplicationFormProps) {
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,6 +56,7 @@ export function ApplicationForm() {
       email: "",
       college: "",
       branch: "",
+      internshipId: selectedInternshipId || "",
       interests: [],
     },
   });
@@ -76,6 +85,30 @@ export function ApplicationForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <FormField
+          control={form.control}
+          name="internshipId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Applying for</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select an internship or project" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {internships.map((internship) => (
+                    <SelectItem key={internship.id} value={internship.id}>
+                      {internship.title} at {internship.company}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <FormField
             control={form.control}
