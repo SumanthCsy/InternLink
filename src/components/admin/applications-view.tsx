@@ -28,14 +28,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
-import { MoreHorizontal, Mail, Printer, Trash2, Eye, Info } from "lucide-react";
+import { MoreHorizontal, Mail, Printer, Trash2, Eye, Download, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "../ui/skeleton";
 import { Badge } from "../ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "../ui/dialog";
+import type { InternshipWithId } from "@/types/internship";
 
 type Application = {
   id: string;
@@ -46,33 +47,55 @@ type Application = {
   branch: string;
   interests: string[];
   appliedAt: Timestamp;
+  internshipId: string;
+  internshipTitle?: string;
 };
 
 export function ApplicationsView() {
   const [applications, setApplications] = useState<Application[]>([]);
+  const [internships, setInternships] = useState<InternshipWithId[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [filter, setFilter] = useState<string>("all");
   const { toast } = useToast();
 
-  const fetchApplications = async () => {
+  const fetchApplicationsAndInternships = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, "applications"), orderBy("appliedAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      const appsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Application[];
+      const internshipsQuery = query(collection(db, "internships"), orderBy("postedAt", "desc"));
+      const internshipsSnapshot = await getDocs(internshipsQuery);
+      const internshipsData = internshipsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as InternshipWithId[];
+      setInternships(internshipsData);
+      
+      const internshipMap = new Map(internshipsData.map(i => [i.id, i.title]));
+
+      const appsQuery = query(collection(db, "applications"), orderBy("appliedAt", "desc"));
+      const appsSnapshot = await getDocs(appsQuery);
+      const appsData = appsSnapshot.docs.map(doc => {
+          const data = doc.data();
+          return { 
+              id: doc.id, 
+              ...data,
+              internshipTitle: internshipMap.get(data.internshipId) || "N/A"
+          } as Application
+      });
       setApplications(appsData);
+
     } catch (error) {
-      console.error("Error fetching applications: ", error);
-      toast({ variant: "destructive", title: "Fetch Error", description: "Could not fetch applications." });
+      console.error("Error fetching data: ", error);
+      toast({ variant: "destructive", title: "Fetch Error", description: "Could not fetch data." });
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchApplications();
-  }, [toast]);
+    fetchApplicationsAndInternships();
+  }, []);
 
   const handleDeleteClick = (app: Application) => {
     setSelectedApp(app);
@@ -84,13 +107,42 @@ export function ApplicationsView() {
       try {
         await deleteDoc(doc(db, "applications", selectedApp.id));
         toast({ title: "Success", description: `Application for ${selectedApp.fullName} deleted.` });
-        fetchApplications(); // Refresh list
+        fetchApplicationsAndInternships(); // Refresh list
       } catch (error) {
         toast({ variant: "destructive", title: "Error", description: "Could not delete application." });
       } finally {
         setIsAlertOpen(false);
         setSelectedApp(null);
       }
+  };
+
+  const downloadCSV = () => {
+    const headers = [
+      "Full Name", "Email", "Mobile", "College", "Branch", 
+      "Applied For", "Interests", "Applied At"
+    ];
+    const rows = filteredApplications.map(app => [
+      `"${app.fullName}"`,
+      `"${app.email}"`,
+      `"${app.mobile}"`,
+      `"${app.college}"`,
+      `"${app.branch}"`,
+      `"${app.internshipTitle}"`,
+      `"${app.interests.join(", ")}"`,
+      `"${app.appliedAt ? new Date(app.appliedAt.seconds * 1000).toLocaleString() : 'N/A'}"`
+    ]);
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + headers.join(",") + "\n" 
+      + rows.map(e => e.join(",")).join("\n");
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `applications_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handlePrint = (app: Application) => {
@@ -240,6 +292,11 @@ export function ApplicationsView() {
                     </div>
                     
                     <div class="detail-item">
+                        <strong>Applying for:</strong>
+                        <p>${app.internshipTitle}</p>
+                    </div>
+
+                    <div class="detail-item">
                         <strong>Interests:</strong>
                         <ul class="interests-list">
                             ${app.interests.map(interest => `<li class="interest-item">${interest}</li>`).join('')}
@@ -265,20 +322,48 @@ export function ApplicationsView() {
     }, 500);
   };
 
+  const filteredApplications = filter === 'all' 
+    ? applications 
+    : applications.filter(app => app.internshipId === filter);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Student Applications</CardTitle>
-        <CardDescription>
-          Here you can view and manage all submitted applications.
-        </CardDescription>
+        <div className="flex justify-between items-start">
+            <div>
+                <CardTitle>Student Applications</CardTitle>
+                <CardDescription>
+                View, manage, and filter all submitted applications.
+                </CardDescription>
+            </div>
+            <div className="flex gap-2">
+                <Button variant="outline" onClick={downloadCSV} disabled={loading || filteredApplications.length === 0}>
+                    <Download className="mr-2 h-4 w-4" />
+                    Download CSV
+                </Button>
+            </div>
+        </div>
+        <div className="mt-4 flex items-center gap-2">
+            <Filter className="h-4 w-4 text-muted-foreground" />
+            <Select onValueChange={setFilter} defaultValue="all" disabled={loading}>
+                <SelectTrigger className="w-[280px]">
+                    <SelectValue placeholder="Filter by internship..." />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">All Internships</SelectItem>
+                    {internships.map(internship => (
+                        <SelectItem key={internship.id} value={internship.id}>{internship.title}</SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Full Name</TableHead>
-              <TableHead className="hidden md:table-cell">Email</TableHead>
+              <TableHead className="hidden md:table-cell">Applied For</TableHead>
               <TableHead className="hidden lg:table-cell">College</TableHead>
               <TableHead className="hidden lg:table-cell">Applied On</TableHead>
               <TableHead className="text-right">Actions</TableHead>
@@ -295,11 +380,11 @@ export function ApplicationsView() {
                   <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
                 </TableRow>
               ))
-            ) : applications.length > 0 ? (
-              applications.map(app => (
+            ) : filteredApplications.length > 0 ? (
+              filteredApplications.map(app => (
                 <TableRow key={app.id}>
                   <TableCell className="font-medium">{app.fullName}</TableCell>
-                  <TableCell className="hidden md:table-cell">{app.email}</TableCell>
+                  <TableCell className="hidden md:table-cell">{app.internshipTitle}</TableCell>
                   <TableCell className="hidden lg:table-cell">{app.college}</TableCell>
                   <TableCell className="hidden lg:table-cell">
                     {app.appliedAt ? new Date(app.appliedAt.seconds * 1000).toLocaleDateString() : 'N/A'}
@@ -349,6 +434,7 @@ export function ApplicationsView() {
                                 <p><strong>Mobile:</strong> {app.mobile}</p>
                                 <p><strong>College:</strong> {app.college}</p>
                                 <p><strong>Branch:</strong> {app.branch}</p>
+                                <p><strong>Applying for:</strong> {app.internshipTitle}</p>
                                 <p><strong>Applied At:</strong> {app.appliedAt ? new Date(app.appliedAt.seconds * 1000).toLocaleString() : 'N/A'}</p>
                                 <div>
                                     <strong>Interests:</strong>
@@ -365,7 +451,7 @@ export function ApplicationsView() {
             ) : (
                 <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
-                        No applications found.
+                        No applications found for this filter.
                     </TableCell>
                 </TableRow>
             )}
