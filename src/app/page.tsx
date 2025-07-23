@@ -3,33 +3,55 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Briefcase, Users, Lightbulb } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import type { InternshipWithId } from "@/types/internship";
+import type { NotificationWithId } from "@/types/notification";
+import { NotificationCarousel } from "@/components/notification-carousel";
 
-// This is a placeholder. In a real app, you would fetch this from Firebase.
-const featuredInternships = [
-  {
-    id: '1',
-    title: 'Frontend Developer Intern',
-    company: 'Vercel',
-    location: 'Remote',
-  },
-  {
-    id: '2',
-    title: 'UX/UI Design Intern',
-    company: 'Figma',
-    location: 'San Francisco, CA',
-  },
-  {
-    id: '3',
-    title: 'Backend Engineer Intern',
-    company: 'Firebase',
-    location: 'Remote',
-  },
-];
+async function getFeaturedInternships() {
+  try {
+    const q = query(collection(db, "internships"), orderBy("postedAt", "desc"), limit(3));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as InternshipWithId[];
+  } catch (error) {
+    console.error("Error fetching featured internships:", error);
+    return [];
+  }
+}
 
-export default function Home() {
+async function getActiveNotifications() {
+  try {
+    const q = query(collection(db, "notifications"), where("isActive", "==", true), orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as NotificationWithId[];
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    return [];
+  }
+}
+
+
+export default async function Home() {
+  const featuredInternships = await getFeaturedInternships();
+  const notifications = await getActiveNotifications();
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-1">
+        {notifications.length > 0 && (
+           <section className="w-full py-4 border-b">
+             <div className="container px-4 md:px-6">
+               <NotificationCarousel notifications={notifications} />
+             </div>
+           </section>
+        )}
         <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
@@ -124,24 +146,28 @@ export default function Home() {
                 Check out these exciting opportunities available right now. Apply and kickstart your career.
               </p>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl">
-              {featuredInternships.map((internship) => (
-                <Card key={internship.id}>
-                  <CardHeader>
-                    <CardTitle className="font-headline">{internship.title}</CardTitle>
-                    <CardDescription>{internship.company}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex justify-between items-center">
-                    <p className="text-sm text-muted-foreground">{internship.location}</p>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link href={`/apply?internshipId=${internship.id}`}>
-                        Apply
-                      </Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            {featuredInternships.length > 0 ? (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 w-full max-w-6xl">
+                    {featuredInternships.map((internship) => (
+                        <Card key={internship.id}>
+                        <CardHeader>
+                            <CardTitle className="font-headline">{internship.title}</CardTitle>
+                            <CardDescription>{internship.company}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex justify-between items-center">
+                            <p className="text-sm text-muted-foreground">{internship.location}</p>
+                            <Button variant="outline" size="sm" asChild>
+                            <Link href={`/apply?internshipId=${internship.id}`}>
+                                Apply
+                            </Link>
+                            </Button>
+                        </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            ) : (
+                <p className="text-muted-foreground mt-4">No internships available yet. Please check back soon!</p>
+            )}
              <div className="mt-8">
                 <Button asChild>
                     <Link href="/internships">View All Internships</Link>

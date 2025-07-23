@@ -3,12 +3,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UploadForm } from "@/components/admin/upload-form";
 import { ApplicationsView } from "@/components/admin/applications-view";
-import { UploadCloud, Users } from "lucide-react";
+import { NotificationsManager } from "@/components/admin/notifications-manager";
+import { UploadCloud, Users, Bell } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
     <Tabs defaultValue="applications" className="w-full">
-      <TabsList className="grid w-full grid-cols-2">
+      <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="applications">
           <Users className="mr-2 h-4 w-4" />
           View Applications
@@ -17,12 +18,19 @@ export default function AdminDashboardPage() {
           <UploadCloud className="mr-2 h-4 w-4" />
           Upload Internship
         </TabsTrigger>
+        <TabsTrigger value="notifications">
+          <Bell className="mr-2 h-4 w-4" />
+          Manage Notifications
+        </TabsTrigger>
       </TabsList>
       <TabsContent value="applications" className="mt-4">
         <ApplicationsView />
       </TabsContent>
       <TabsContent value="upload" className="mt-4">
         <UploadForm />
+      </TabsContent>
+      <TabsContent value="notifications" className="mt-4">
+        <NotificationsManager />
       </TabsContent>
     </Tabs>
   );
