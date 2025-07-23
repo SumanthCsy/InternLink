@@ -25,12 +25,15 @@ async function getFeaturedInternships() {
 
 async function getActiveNotifications() {
   try {
-    const q = query(collection(db, "notifications"), where("isActive", "==", true), orderBy("createdAt", "desc"));
+    // Fetch all notifications and filter in-code to avoid composite index requirement
+    const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
+    const notifications = querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as NotificationWithId[];
+    
+    return notifications.filter(n => n.isActive);
   } catch (error) {
     console.error("Error fetching notifications:", error);
     return [];
@@ -74,7 +77,7 @@ export default async function Home() {
                 </div>
               </div>
               <Image
-                src="https://placehold.co/600/400.png"
+                src="https://placehold.co/600x400.png"
                 alt="Hero"
                 width={600}
                 height={400}
