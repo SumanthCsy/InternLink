@@ -64,12 +64,12 @@ export default function CommunityPage() {
             <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               Our community platform is designed to foster collaboration. Start a project, find teammates, and bring your ideas to life with the support of a passionate community.
             </p>
-             <Button asChild>
-                <Link href="/apply">Apply to a Project</Link>
-             </Button>
+             <Link href="/apply">
+                <Button>Apply to a Project</Button>
+             </Link>
           </div>
           <Image
-            src="https://placehold.co/550x310.png"
+            src="src/community.jpeg"
             width={550}
             height={310}
             alt="Community collaboration"

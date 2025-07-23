@@ -34,7 +34,7 @@ export function NotificationCarousel({ notifications }: NotificationCarouselProp
                             <p className="font-medium">{notification.title}</p>
                         )}
                         <p className="text-xs text-muted-foreground pt-1">
-                            {new Date(notification.createdAt.seconds * 1000).toLocaleDateString()}
+                            {new Date(notification.createdAt as string).toLocaleDateString()}
                         </p>
                     </div>
                 ))}

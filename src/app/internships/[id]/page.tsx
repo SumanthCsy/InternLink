@@ -93,9 +93,11 @@ export default function InternshipDetailsPage() {
       <div className="container py-12 md:py-24 text-center">
         <h1 className="text-2xl font-bold text-destructive mb-4">Error</h1>
         <p className="text-muted-foreground">{error}</p>
-        <Button asChild variant="outline" className="mt-8">
-            <Link href="/internships"><ArrowLeft className="mr-2" /> Back to Internships</Link>
-        </Button>
+        <Link href="/internships">
+            <Button variant="outline" className="mt-8">
+                <ArrowLeft className="mr-2" /> Back to Internships
+            </Button>
+        </Link>
       </div>
     );
   }
@@ -105,9 +107,11 @@ export default function InternshipDetailsPage() {
   return (
     <section className="w-full py-12 md:py-24">
        <div className="container px-4 md:px-6">
-          <Button asChild variant="ghost" className="mb-8">
-             <Link href="/internships"><ArrowLeft className="mr-2" /> Back to all internships</Link>
-          </Button>
+          <Link href="/internships">
+            <Button variant="ghost" className="mb-8">
+                <ArrowLeft className="mr-2" /> Back to all internships
+            </Button>
+          </Link>
          <Card className="max-w-4xl mx-auto shadow-lg">
            <CardHeader>
              <div className="flex justify-between items-start">
@@ -129,9 +133,11 @@ export default function InternshipDetailsPage() {
              <div className="prose prose-invert max-w-none text-muted-foreground mt-4 whitespace-pre-wrap">
                 <p>{internship.description}</p>
              </div>
-              <Button asChild size="lg" className="mt-8">
-                <Link href={`/apply?internshipId=${internship.id}&title=${internship.title}`}>Apply Now</Link>
-            </Button>
+            <Link href={`/apply?internshipId=${internship.id}&title=${internship.title}`}>
+              <Button size="lg" className="mt-8">
+                Apply Now
+              </Button>
+            </Link>
            </CardContent>
          </Card>
        </div>

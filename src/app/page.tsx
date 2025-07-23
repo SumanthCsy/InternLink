@@ -25,14 +25,18 @@ async function getFeaturedInternships() {
 
 async function getActiveNotifications() {
   try {
-    // Fetch all notifications and filter in-code to avoid composite index requirement
     const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
-    const notifications = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as NotificationWithId[];
-    
+    const notifications = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        // Convert Timestamp to a serializable format (e.g., ISO string)
+        createdAt: data.createdAt.toDate().toISOString(),
+      }
+    }) as unknown as NotificationWithId[]; // We cast because our type expects a string now for createdAt
+
     return notifications.filter(n => n.isActive);
   } catch (error) {
     console.error("Error fetching notifications:", error);
@@ -62,12 +66,12 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button asChild size="lg">
-                    <Link href="/internships">Browse Internships</Link>
-                  </Button>
-                  <Button asChild variant="outline" size="lg">
-                    <Link href="/community">Join a Community</Link>
-                  </Button>
+                  <Link href="/internships">
+                    <Button size="lg">Browse Internships</Button>
+                  </Link>
+                  <Link href="/community">
+                    <Button variant="outline" size="lg">Join a Community</Button>
+                  </Link>
                 </div>
               </div>
 
@@ -151,11 +155,11 @@ export default async function Home() {
                         </CardHeader>
                         <CardContent className="flex justify-between items-center">
                             <p className="text-sm text-muted-foreground">{internship.location}</p>
-                            <Button variant="outline" size="sm" asChild>
                             <Link href={`/apply?internshipId=${internship.id}`}>
-                                Apply
+                                <Button variant="outline" size="sm">
+                                    Apply
+                                </Button>
                             </Link>
-                            </Button>
                         </CardContent>
                         </Card>
                     ))}
@@ -164,9 +168,9 @@ export default async function Home() {
                 <p className="text-muted-foreground mt-4">No internships available yet. Please check back soon!</p>
             )}
              <div className="mt-8">
-                <Button asChild>
-                    <Link href="/internships">View All Internships</Link>
-                </Button>
+                <Link href="/internships">
+                    <Button>View All Internships</Button>
+                </Link>
              </div>
           </div>
         </section>

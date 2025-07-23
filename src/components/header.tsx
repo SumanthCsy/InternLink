@@ -72,9 +72,9 @@ export function Header() {
           </Sheet>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <Button asChild>
-            <Link href="/apply">Apply Now</Link>
-          </Button>
+          <Link href="/apply">
+            <Button>Apply Now</Button>
+          </Link>
         </div>
       </div>
     </header>
