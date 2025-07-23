@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -333,13 +334,17 @@ export function ApplicationsView() {
                         </DropdownMenu>
                          <DialogContent>
                             <DialogHeader>
-                            <DialogTitle>Application: {app.fullName}</DialogTitle>
-                            <DialogDescription>Branch: {app.branch}</DialogDescription>
+                            <DialogTitle>Application Details</DialogTitle>
+                            <DialogDescription>
+                                Review the applicant's information below.
+                            </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-2 text-sm">
+                                <p><strong>Full Name:</strong> {app.fullName}</p>
                                 <p><strong>Email:</strong> {app.email}</p>
                                 <p><strong>Mobile:</strong> {app.mobile}</p>
                                 <p><strong>College:</strong> {app.college}</p>
+                                <p><strong>Branch:</strong> {app.branch}</p>
                                 <p><strong>Applied At:</strong> {app.appliedAt ? new Date(app.appliedAt.seconds * 1000).toLocaleString() : 'N/A'}</p>
                                 <div>
                                     <strong>Interests:</strong>
@@ -380,3 +385,5 @@ export function ApplicationsView() {
     </Card>
   );
 }
+
+    
