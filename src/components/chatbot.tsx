@@ -15,6 +15,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { answerQuestions } from "@/ai/flows/answer-questions";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 
 type Message = {
   text: string;
@@ -132,7 +134,7 @@ export function Chatbot() {
                         <AvatarFallback>AI</AvatarFallback>
                     </Avatar>
                     <div className="max-w-[75%] rounded-lg p-3 text-sm bg-muted">
-                        <p>Hello! How can I help you with internships, applications, or community guidelines today?</p>
+                        <p>Hello! How can I help you find an internship today?</p>
                     </div>
                 </div>
                 {messages.map((message, index) => (
@@ -154,7 +156,13 @@ export function Chatbot() {
                           : "bg-muted"
                       }`}
                     >
-                      <p>{message.text}</p>
+                      <ReactMarkdown
+                        components={{
+                            a: ({node, ...props}) => <Link {...props} href={props.href || ''} className="text-primary underline hover:text-primary/80" />
+                        }}
+                      >
+                        {message.text}
+                      </ReactMarkdown>
                     </div>
                   </div>
                 ))}

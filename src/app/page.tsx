@@ -32,10 +32,9 @@ async function getActiveNotifications() {
       return {
         id: doc.id,
         ...data,
-        // Convert Timestamp to a serializable format (e.g., ISO string)
         createdAt: data.createdAt.toDate().toISOString(),
       }
-    }) as unknown as NotificationWithId[]; // We cast because our type expects a string now for createdAt
+    }) as unknown as NotificationWithId[];
 
     return notifications.filter(n => n.isActive);
   } catch (error) {
@@ -62,7 +61,7 @@ export default async function Home() {
                     Find Your Next Tech Internship
                   </h1>
                   <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                    InternLink connects talented students with innovative companies for hands-on experience, project collaboration, and community building.
+                    InternLink connects talented students with innovative companies for hands-on experience, project collaboration, and skill building.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
@@ -70,7 +69,7 @@ export default async function Home() {
                     <Link href="/internships">Browse Internships</Link>
                   </Button>
                   <Button variant="outline" size="lg" asChild>
-                    <Link href="/community">Join a Community</Link>
+                    <Link href="/apply">Apply Now</Link>
                   </Button>
                 </div>
               </div>
@@ -97,7 +96,7 @@ export default async function Home() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
+            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-2 lg:gap-12">
               <Card className="h-full">
                 <CardHeader>
                   <Briefcase className="w-8 h-8 mb-2 text-accent" />
@@ -106,17 +105,6 @@ export default async function Home() {
                 <CardContent>
                   <CardDescription>
                     Explore a curated list of internships from top tech companies and exciting startups.
-                  </CardDescription>
-                </CardContent>
-              </Card>
-              <Card className="h-full">
-                <CardHeader>
-                  <Users className="w-8 h-8 mb-2 text-accent" />
-                  <CardTitle className="font-headline">Project Communities</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription>
-                    Form teams, share ideas, and build real-world projects with fellow students.
                   </CardDescription>
                 </CardContent>
               </Card>

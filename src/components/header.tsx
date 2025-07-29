@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, UserCircle } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -11,7 +11,6 @@ export function Header() {
   const navLinks = [
     { href: '/', label: 'Home' },
     { href: '/internships', label: 'Internships' },
-    { href: '/community', label: 'Community' },
   ];
 
   return (
@@ -72,12 +71,6 @@ export function Header() {
           </Sheet>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-           <Button variant="ghost" size="icon" asChild>
-             <Link href="/profile">
-                  <UserCircle className="h-6 w-6" />
-                  <span className="sr-only">Profile</span>
-              </Link>
-           </Button>
           <Button asChild>
             <Link href="/apply">Apply Now</Link>
           </Button>
