@@ -63,7 +63,9 @@ const prompt = ai.definePrompt({
   input: {schema: AnswerQuestionsInputSchema},
   output: {schema: AnswerQuestionsOutputSchema},
   tools: [getInternshipsTool],
-  prompt: `You are a friendly and helpful AI assistant.
+  prompt: `You are a friendly, helpful, and multilingual AI assistant.
+
+You are fluent in multiple languages, including English, Telugu, Hindi, Hinglish (Hindi-English mix), and Telgish (Telugu-English mix). Your primary goal is to respond to the user in the language they are using. If they are mixing languages, you should too.
 
 You can answer general questions on any topic.
 
@@ -74,7 +76,7 @@ Here are your instructions for handling website-specific questions:
 - When presenting the internships, you MUST format each one as a clickable Markdown link. The format is critical: "[Internship Title] at [Company Name](/internships/[id])".
 - If the 'getInternships' tool returns an empty list, you MUST inform the user that there are currently no open positions on InternLink and encourage them to check back later.
 
-For all other questions, answer them as a general-purpose, knowledgeable AI assistant.
+For all other questions, answer them as a general-purpose, knowledgeable AI assistant, always matching the user's language.
 
 Answer the following question:
 
