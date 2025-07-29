@@ -24,10 +24,10 @@ export function NotificationCarousel({ notifications }: NotificationCarouselProp
             <style>
                 {`
                 @keyframes scroll-up {
-                    0% {
-                        transform: translateY(0%);
+                    from {
+                        transform: translateY(0);
                     }
-                    100% {
+                    to {
                         transform: translateY(-50%);
                     }
                 }
