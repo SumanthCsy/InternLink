@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { db } from "@/lib/firebase";
-import { collection, getDocs, addDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, query, orderBy } from "firebase/firestore";
 import type { Community, CommunityWithId } from "@/types/community";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +36,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2, PlusCircle, Building2 } from "lucide-react";
+import { Trash2, Edit, PlusCircle, Building2 } from "lucide-react";
 import { Skeleton } from "../ui/skeleton";
 import { Badge } from "../ui/badge";
 
@@ -71,13 +71,15 @@ export function CommunityManager() {
     fetchCommunities();
   }, []);
 
-  const handleOpenForm = () => {
-    setFormData({ name: "", description: "" });
+  const handleOpenForm = (community: CommunityWithId | null = null) => {
+    setCurrentCommunity(community);
+    setFormData(community ? { name: community.name, description: community.description } : { name: "", description: "" });
     setIsFormOpen(true);
   };
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
+    setCurrentCommunity(null);
   };
 
   const handleSave = async () => {
@@ -87,13 +89,21 @@ export function CommunityManager() {
     }
     
     try {
-      await addDoc(collection(db, "communities"), {
-        ...formData,
-        memberCount: 0,
-        createdAt: serverTimestamp(),
-        icon: "default",
-      });
-      toast({ title: "Success", description: "Community created." });
+      if (currentCommunity) {
+        // Update existing
+        const communityRef = doc(db, "communities", currentCommunity.id);
+        await updateDoc(communityRef, { name: formData.name, description: formData.description });
+        toast({ title: "Success", description: "Community updated." });
+      } else {
+        // Create new
+        await addDoc(collection(db, "communities"), {
+          ...formData,
+          memberCount: 0,
+          createdAt: serverTimestamp(),
+          icon: "default",
+        });
+        toast({ title: "Success", description: "Community created." });
+      }
       fetchCommunities();
       handleCloseForm();
     } catch (error) {
@@ -126,20 +136,20 @@ export function CommunityManager() {
       <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
           <CardTitle>Manage Communities</CardTitle>
-          <CardDescription>Create, view, and manage your user communities.</CardDescription>
+          <CardDescription>Create, edit, and manage your user communities.</CardDescription>
         </div>
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
-                <Button onClick={handleOpenForm} className="mt-4 md:mt-0">
+                <Button onClick={() => handleOpenForm()} className="mt-4 md:mt-0">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Create Community
                 </Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create New Community</DialogTitle>
+                    <DialogTitle>{currentCommunity ? 'Edit' : 'Create'} Community</DialogTitle>
                     <DialogDescription>
-                        Fill in the details for the new community channel.
+                        Fill in the details for the community channel.
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -154,7 +164,7 @@ export function CommunityManager() {
                 </div>
                 <DialogFooter>
                     <Button variant="outline" onClick={handleCloseForm}>Cancel</Button>
-                    <Button onClick={handleSave}>Create</Button>
+                    <Button onClick={handleSave}>Save</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -166,6 +176,7 @@ export function CommunityManager() {
                 <div key={i} className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="flex-1"><Skeleton className="h-5 w-3/4" /></div>
                     <div className="flex items-center gap-4">
+                        <Skeleton className="h-8 w-8" />
                         <Skeleton className="h-8 w-8" />
                     </div>
                 </div>
@@ -180,10 +191,15 @@ export function CommunityManager() {
                     </div>
                     <p className="text-xs text-muted-foreground pl-7">{community.description}</p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                      <Badge variant="secondary">{community.memberCount || 0} Members</Badge>
+                     <Button variant="ghost" size="icon" onClick={() => handleOpenForm(community)}>
+                        <Edit className="h-4 w-4" />
+                        <span className="sr-only">Edit</span>
+                    </Button>
                      <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-500" onClick={() => handleDeleteClick(community)}>
                         <Trash2 className="h-4 w-4" />
+                        <span className="sr-only">Delete</span>
                     </Button>
                 </div>
               </div>
