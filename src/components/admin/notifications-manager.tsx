@@ -47,7 +47,7 @@ export function NotificationsManager() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [currentNotif, setCurrentNotif] = useState<NotificationWithId | null>(null);
-  const [formData, setFormData] = useState({ title: "", link: "" });
+  const [formData, setFormData] = useState({ title: "", link: "", isNew: false });
   const { toast } = useToast();
 
   const fetchNotifications = async () => {
@@ -74,7 +74,7 @@ export function NotificationsManager() {
 
   const handleOpenForm = (notif: NotificationWithId | null = null) => {
     setCurrentNotif(notif);
-    setFormData(notif ? { title: notif.title, link: notif.link } : { title: "", link: "" });
+    setFormData(notif ? { title: notif.title, link: notif.link, isNew: !!notif.isNew } : { title: "", link: "", isNew: false });
     setIsFormOpen(true);
   };
 
@@ -89,16 +89,22 @@ export function NotificationsManager() {
         return;
     }
     
+    const dataToSave = {
+        title: formData.title,
+        link: formData.link,
+        isNew: formData.isNew,
+    }
+
     try {
       if (currentNotif) {
         // Update existing
         const notifRef = doc(db, "notifications", currentNotif.id);
-        await updateDoc(notifRef, { title: formData.title, link: formData.link });
+        await updateDoc(notifRef, dataToSave);
         toast({ title: "Success", description: "Notification updated." });
       } else {
         // Create new
         await addDoc(collection(db, "notifications"), {
-          ...formData,
+          ...dataToSave,
           isActive: true,
           createdAt: serverTimestamp(),
         });
@@ -144,14 +150,14 @@ export function NotificationsManager() {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row justify-between items-start">
+      <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
           <CardTitle>Manage Notifications</CardTitle>
           <CardDescription>Create, edit, and toggle site-wide notifications.</CardDescription>
         </div>
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
-                <Button onClick={() => handleOpenForm()}>
+                <Button onClick={() => handleOpenForm()} className="mt-4 md:mt-0">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Notification
                 </Button>
@@ -171,6 +177,10 @@ export function NotificationsManager() {
                     <div className="grid grid-cols-4 items-center gap-4">
                         <Label htmlFor="link" className="text-right">Link (Optional)</Label>
                         <Input id="link" value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} className="col-span-3" placeholder="e.g., /internships/some-id" />
+                    </div>
+                     <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="isNew" className="text-right">Mark as New</Label>
+                        <Switch id="isNew" checked={formData.isNew} onCheckedChange={checked => setFormData({...formData, isNew: checked})} />
                     </div>
                 </div>
                 <DialogFooter>
@@ -195,9 +205,12 @@ export function NotificationsManager() {
             ))
           ) : notifications.length > 0 ? (
             notifications.map((notif) => (
-              <div key={notif.id} className="flex items-center justify-between p-3 border rounded-lg">
+              <div key={notif.id} className="flex flex-col md:flex-row items-start md:items-center justify-between p-3 border rounded-lg gap-4">
                 <div className="flex-1">
-                    <p className="font-medium">{notif.title}</p>
+                    <div className="flex items-center gap-2">
+                        {notif.isNew && <Badge className="animate-blink">New</Badge>}
+                        <p className="font-medium">{notif.title}</p>
+                    </div>
                     {notif.link && (
                         <Link href={notif.link} className="text-xs text-muted-foreground hover:underline" target="_blank">
                            {notif.link}

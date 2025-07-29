@@ -5,6 +5,7 @@ export type Notification = {
   link: string;
   isActive: boolean;
   createdAt: Timestamp | string; // Allow string for serialized date
+  isNew?: boolean;
 };
 
 export type NotificationWithId = Notification & {
