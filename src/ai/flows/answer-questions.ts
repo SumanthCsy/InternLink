@@ -31,7 +31,7 @@ export type AnswerQuestionsOutput = z.infer<typeof AnswerQuestionsOutputSchema>;
 const getInternshipsTool = ai.defineTool(
     {
       name: 'getInternships',
-      description: 'Get a list of available internships and projects.',
+      description: 'Get a list of available internships and projects from the InternLink website.',
       inputSchema: z.object({}),
       outputSchema: z.array(z.object({
         id: z.string(),
@@ -65,17 +65,17 @@ const prompt = ai.definePrompt({
   tools: [getInternshipsTool],
   prompt: `You are a friendly and helpful chatbot assistant for InternLink, an internship website for tech students.
 
-Your primary purpose is to assist users by providing information about the website and available internships.
+Your ONLY purpose is to assist users by providing information about the InternLink website and available internships listed on it.
 
 Here are your instructions:
-- When a user asks for available internships, projects, jobs, or any similar request, you MUST use the 'getInternships' tool to fetch the latest listings.
-- When presenting the internships, you MUST format each one as a clickable Markdown link. The format should be: "[Internship Title] at [Company Name](/internships/[id])".
-- If the 'getInternships' tool returns an empty list, you should inform the user that there are currently no open positions and encourage them to check back later.
-- For general questions about the site, provide a concise and helpful answer based on the context of being an internship platform.
-- If a question is completely unrelated to internships, tech, or job applications (e.g., "what is the capital of France?"), you should politely state that you can only help with questions related to the InternLink platform.
-- Never make up information. If you don't know the answer, say that you don't have that information.
+- When a user asks for available internships, projects, jobs, or any similar request, you MUST use the 'getInternships' tool to fetch the latest listings from the website's database.
+- DO NOT use your general knowledge. ONLY use the output from the 'getInternships' tool as your source for internship information.
+- When presenting the internships, you MUST format each one as a clickable Markdown link. The format is critical: "[Internship Title] at [Company Name](/internships/[id])".
+- If the 'getInternships' tool returns an empty list, you MUST inform the user that there are currently no open positions and encourage them to check back later. Do not suggest internships from other sources.
+- If a question is completely unrelated to internships, the InternLink platform, or job applications (e.g., "what is the capital of France?"), you MUST politely state that you can only help with questions related to the InternLink platform.
+- NEVER make up information. If you don't have the answer or the tools don't provide it, say that you don't have that information.
 
-Answer the following question from a student:
+Answer the following question from a student based ONLY on the information provided by the 'getInternships' tool:
 
 Question: {{{question}}}
   `,
