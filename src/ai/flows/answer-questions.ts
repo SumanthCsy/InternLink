@@ -32,6 +32,7 @@ const getInternshipsTool = ai.defineTool(
     {
       name: 'getInternships',
       description: 'Get a list of available internships and projects.',
+      inputSchema: z.object({}),
       outputSchema: z.array(z.object({
         id: z.string(),
         title: z.string(),
