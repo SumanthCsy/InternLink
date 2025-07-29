@@ -16,8 +16,7 @@ export function NotificationCarousel({ notifications }: NotificationCarouselProp
         return null
     }
 
-    const duplicatedNotifications = [...notifications, ...notifications];
-    const animationDuration = `${notifications.length * 5}s`;
+    const animationDuration = `${notifications.length * 4}s`;
 
     return (
         <Card className="w-full max-w-lg mx-auto overflow-hidden">
@@ -25,10 +24,10 @@ export function NotificationCarousel({ notifications }: NotificationCarouselProp
                 {`
                 @keyframes scroll-up {
                     0% {
-                        transform: translateY(0);
+                        transform: translateY(100%);
                     }
                     100% {
-                        transform: translateY(-50%);
+                        transform: translateY(-100%);
                     }
                 }
                 .animate-scroll-up {
@@ -48,8 +47,8 @@ export function NotificationCarousel({ notifications }: NotificationCarouselProp
                     style={{ animationDuration }}
                   >
                     <div className="flex flex-col gap-4 py-4">
-                        {duplicatedNotifications.map((notification, index) => (
-                            <div key={`${notification.id}-${index}`} className="w-full px-4 text-center">
+                        {notifications.map((notification, index) => (
+                            <div key={`${notification.id}-${index}`} className="w-full px-4 text-center flex-shrink-0">
                                 <div className="flex justify-center items-center gap-2">
                                      {notification.isNew && (
                                         <Badge className="animate-blink">New</Badge>
