@@ -9,7 +9,7 @@ import { UploadCloud, Users, Bell } from "lucide-react";
 export default function AdminDashboardPage() {
   return (
     <Tabs defaultValue="applications" className="w-full">
-      <TabsList className="grid w-full grid-cols-3">
+      <TabsList className="grid w-full grid-cols-1 sm:grid-cols-3">
         <TabsTrigger value="applications">
           <Users className="mr-2 h-4 w-4" />
           View Applications

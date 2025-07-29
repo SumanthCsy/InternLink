@@ -329,7 +329,7 @@ export function ApplicationsView() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
                 <CardTitle>Student Applications</CardTitle>
                 <CardDescription>
@@ -346,7 +346,7 @@ export function ApplicationsView() {
         <div className="mt-4 flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
             <Select onValueChange={setFilter} defaultValue="all" disabled={loading}>
-                <SelectTrigger className="w-[280px]">
+                <SelectTrigger className="w-full sm:w-[280px]">
                     <SelectValue placeholder="Filter by internship..." />
                 </SelectTrigger>
                 <SelectContent>

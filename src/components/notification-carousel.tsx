@@ -10,8 +10,11 @@ type NotificationCarouselProps = {
 }
 
 export function NotificationCarousel({ notifications }: NotificationCarouselProps) {
-    // We need to duplicate the notifications to create a seamless loop
-    const duplicatedNotifications = [...notifications, ...notifications];
+    if (!notifications || notifications.length === 0) {
+        return null;
+    }
+
+    const animationDuration = notifications.length * 5;
 
   return (
     <Card className="w-full max-w-lg mx-auto overflow-hidden">
@@ -23,8 +26,11 @@ export function NotificationCarousel({ notifications }: NotificationCarouselProp
         </CardHeader>
         <CardContent className="p-0">
            <div className="h-48 overflow-hidden relative">
-             <div className="absolute top-0 animate-scroll-up">
-                {duplicatedNotifications.map((notification, index) => (
+             <div 
+                className="absolute top-0 animate-scroll-up" 
+                style={{ animationDuration: `${animationDuration}s`}}
+             >
+                {[...notifications, ...notifications].map((notification, index) => (
                      <div key={`${notification.id}-${index}`} className="p-4 border-b">
                          {notification.link ? (
                             <Link href={notification.link} className="font-medium hover:underline">
