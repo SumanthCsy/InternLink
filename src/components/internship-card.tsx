@@ -41,15 +41,15 @@ export function InternshipCard({ internship }: { internship: InternshipWithId })
           </p>
         </CardContent>
         <CardFooter className="flex gap-2">
-            <Link href={`/internships/${internship.id}`} className="w-full">
-                <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full" asChild>
+                <Link href={`/internships/${internship.id}`}>
                     <Eye className="mr-2 h-4 w-4" />
                     View
-                </Button>
-            </Link>
-            <Link href={`/apply?internshipId=${internship.id}&title=${internship.title}`} className="w-full">
-                <Button className="w-full">Apply Now</Button>
-            </Link>
+                </Link>
+            </Button>
+            <Button className="w-full" asChild>
+                <Link href={`/apply?internshipId=${internship.id}&title=${internship.title}`}>Apply Now</Link>
+            </Button>
         </CardFooter>
       </Card>
   );

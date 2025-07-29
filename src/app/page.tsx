@@ -66,12 +66,12 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link href="/internships">
-                    <Button size="lg">Browse Internships</Button>
-                  </Link>
-                  <Link href="/community">
-                    <Button variant="outline" size="lg">Join a Community</Button>
-                  </Link>
+                  <Button size="lg" asChild>
+                    <Link href="/internships">Browse Internships</Link>
+                  </Button>
+                  <Button variant="outline" size="lg" asChild>
+                    <Link href="/community">Join a Community</Link>
+                  </Button>
                 </div>
               </div>
 
@@ -155,11 +155,11 @@ export default async function Home() {
                         </CardHeader>
                         <CardContent className="flex justify-between items-center">
                             <p className="text-sm text-muted-foreground">{internship.location}</p>
-                            <Link href={`/apply?internshipId=${internship.id}`}>
-                                <Button variant="outline" size="sm">
-                                    Apply
-                                </Button>
-                            </Link>
+                            <Button variant="outline" size="sm" asChild>
+                              <Link href={`/apply?internshipId=${internship.id}`}>
+                                  Apply
+                              </Link>
+                            </Button>
                         </CardContent>
                         </Card>
                     ))}
@@ -168,9 +168,9 @@ export default async function Home() {
                 <p className="text-muted-foreground mt-4">No internships available yet. Please check back soon!</p>
             )}
              <div className="mt-8">
-                <Link href="/internships">
-                    <Button>View All Internships</Button>
-                </Link>
+                <Button asChild>
+                  <Link href="/internships">View All Internships</Link>
+                </Button>
              </div>
           </div>
         </section>

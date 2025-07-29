@@ -77,16 +77,20 @@ export default function CommunityPage() {
                 Array.from({ length: 4 }).map((_, index) => <CommunityCardSkeleton key={index} />)
               ) : communities.length > 0 ? (
                 communities.map((community) => (
-                  <Card key={community.id} className="h-full hover:shadow-lg hover:border-primary/50 transition-all duration-200">
+                  <Card key={community.id} className="h-full flex flex-col hover:shadow-lg hover:border-primary/50 transition-all duration-200">
                     <CardHeader className="flex flex-col items-center text-center">
                       {iconMap[community.icon] || iconMap.default}
                       <CardTitle className="font-headline mt-2">{community.name}</CardTitle>
                        <CardDescription>{community.description}</CardDescription>
                     </CardHeader>
-                    <CardContent className="text-center">
-                      <p className="text-lg font-bold">{community.memberCount || 0}</p>
-                      <p className="text-sm text-muted-foreground">Members</p>
-                      <Button variant="outline" className="mt-4" disabled>Join</Button>
+                    <CardContent className="text-center flex-grow flex flex-col justify-end">
+                      <div className="mb-4">
+                        <p className="text-lg font-bold">{community.memberCount || 0}</p>
+                        <p className="text-sm text-muted-foreground">Members</p>
+                      </div>
+                      <Button variant="outline" className="w-full" asChild>
+                        <Link href={`/community/${community.id}`}>View Community</Link>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))
@@ -106,9 +110,9 @@ export default function CommunityPage() {
             <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
               Our community platform is designed to foster collaboration. Start a project, find teammates, and bring your ideas to life with the support of a passionate community.
             </p>
-             <Link href="/apply">
-                <Button>Apply to a Project</Button>
-             </Link>
+             <Button asChild>
+                <Link href="/apply">Apply to a Project</Link>
+             </Button>
           </div>
           <Image
             src="/community.png"
@@ -136,7 +140,7 @@ function CommunityCardSkeleton() {
             <CardContent className="text-center flex flex-col items-center">
                 <Skeleton className="h-6 w-12" />
                 <Skeleton className="h-4 w-16 mt-1" />
-                <Skeleton className="h-9 w-20 mt-4" />
+                <Skeleton className="h-9 w-full mt-4" />
             </CardContent>
         </Card>
     )

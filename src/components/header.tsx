@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu } from 'lucide-react';
+import { Menu, UserCircle } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 
@@ -71,10 +71,16 @@ export function Header() {
             </SheetContent>
           </Sheet>
         </div>
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <Link href="/apply">
-            <Button>Apply Now</Button>
-          </Link>
+        <div className="flex flex-1 items-center justify-end space-x-2">
+           <Button variant="ghost" size="icon" asChild>
+             <Link href="/profile">
+                  <UserCircle className="h-6 w-6" />
+                  <span className="sr-only">Profile</span>
+              </Link>
+           </Button>
+          <Button asChild>
+            <Link href="/apply">Apply Now</Link>
+          </Button>
         </div>
       </div>
     </header>
